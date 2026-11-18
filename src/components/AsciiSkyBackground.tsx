@@ -14,9 +14,10 @@ export const AsciiSkyBackground: React.FC<AsciiSkyBackgroundProps> = React.memo(
     const pre = preRef.current;
     if (!pre) return;
 
-    // Play cloud-drift ASCII animation in loop
+    // Play cloud-drift ASCII animation in loop (still: false guarantees animation runs smoothly across all clients)
     const stop = play(pre, { default: createPiece, meta }, {
-      speed: 0.65,
+      speed: 0.85,
+      still: false,
       dom: false
     });
 

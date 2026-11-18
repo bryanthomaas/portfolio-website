@@ -116,12 +116,12 @@ main,
   width: 100% !important;
   height: 100% !important;
   object-fit: cover;
-  opacity: 0.20;
-  filter: brightness(0.65) sepia(0.85) hue-rotate(315deg) saturate(1.8);
+  opacity: 0.55;
+  filter: brightness(0.95) sepia(0.65) hue-rotate(325deg) saturate(2.4);
 }
 
 [data-theme="light"] .ascii-sky-canvas-wrapper canvas {
-  opacity: 0.16;
+  opacity: 0.35;
 }
 
 .ascii-sky-overlay {
@@ -129,8 +129,8 @@ main,
   inset: 0;
   background: radial-gradient(
     ellipse at 50% 50%,
-    transparent 35%,
-    rgba(37, 1, 4, 0.65) 100%
+    transparent 50%,
+    rgba(37, 1, 4, 0.35) 100%
   );
   pointer-events: none;
 }
