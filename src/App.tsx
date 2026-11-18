@@ -14,6 +14,7 @@ import { SkillsSection, type SkillFilter } from './components/SkillsSection';
 import { EducationSection } from './components/EducationSection';
 import { ExperienceSection } from './components/ExperienceSection';
 import { ContactSection } from './components/ContactSection';
+import { EasterEggFlowers } from './components/EasterEggFlowers';
 import { Footer } from './components/Footer';
 import { Modals } from './components/Modals';
 
@@ -356,6 +357,9 @@ export const App: React.FC = () => {
           onCopyPhone={handleCopyPhone}
           onFormSubmit={handleContactSubmit}
         />
+
+        {/* Easter Egg: Blooming ASCII Lily Bouquet */}
+        <EasterEggFlowers />
       </main>
 
       {/* Footer */}
