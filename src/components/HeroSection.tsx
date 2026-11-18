@@ -17,7 +17,7 @@ export const HeroSection: React.FC<HeroSectionProps> = React.memo(({ onNavigate 
         <div className="hero-intro-card card">
           <div className="hero-identity-row">
             <img
-              src="https://avatars.githubusercontent.com/u/157053252?v=4"
+              src="https://avatars.githubusercontent.com/u/157053252?v=4&s=256"
               alt="Bryan Thomas"
               className="hero-avatar"
               width="64"

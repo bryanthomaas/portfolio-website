@@ -27,27 +27,10 @@
   --text-muted: #E85B49;
   --text-on-accent: #100103;
 
-  /* Multi-Layered Oxblood Text Halos (Keeps text razor-sharp over transparent cards on OLED) */
-  --text-halo-strong:
-    -1px -1px 0 #0d0002,
-    1px -1px 0 #0d0002,
-    -1px 1px 0 #0d0002,
-    1px 1px 0 #0d0002,
-    0 2px 6px rgba(10, 0, 1, 0.96);
-
-  --text-halo-body:
-    -1px -1px 0 rgba(14, 0, 2, 0.94),
-    1px -1px 0 rgba(14, 0, 2, 0.94),
-    -1px 1px 0 rgba(14, 0, 2, 0.94),
-    1px 1px 0 rgba(14, 0, 2, 0.94),
-    0 1px 4px rgba(10, 0, 1, 0.92);
-
-  --text-halo-meta:
-    -1px -1px 0 #0d0002,
-    1px -1px 0 #0d0002,
-    -1px 1px 0 #0d0002,
-    1px 1px 0 #0d0002,
-    0 1px 4px rgba(10, 0, 1, 0.96);
+  /* Crisp Text Rendering (Pure vector antialiasing without artificial pixelated faux-strokes) */
+  --text-halo-strong: none;
+  --text-halo-body: none;
+  --text-halo-meta: none;
 
   /* Hairlines & Borders — Powered by #D71A06 Foreground & #CDF73D Focus */
   --border-subtle: rgba(215, 26, 6, 0.42);

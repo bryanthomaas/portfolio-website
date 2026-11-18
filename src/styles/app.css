@@ -17,7 +17,7 @@ html {
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-rendering: geometricPrecision;
+  text-rendering: optimizeLegibility;
   overflow-x: clip;
 }
 
@@ -106,22 +106,22 @@ main,
 .ascii-sky-pre {
   margin: 0;
   font-family: var(--font-mono);
-  font-size: clamp(8px, 1.1vw, 15px);
   line-height: 1;
   white-space: pre;
-  opacity: 0.18;
+  letter-spacing: 0;
 }
 
 .ascii-sky-canvas-wrapper canvas {
-  width: 100% !important;
-  height: 100% !important;
+  width: 100vw !important;
+  height: 100vh !important;
   object-fit: cover;
-  opacity: 0.32;
-  filter: brightness(0.78) sepia(0.55) hue-rotate(330deg) saturate(1.7) contrast(1.05);
+  opacity: 0.42;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 
 [data-theme="light"] .ascii-sky-canvas-wrapper canvas {
-  opacity: 0.22;
+  opacity: 0.30;
 }
 
 .ascii-sky-overlay {
@@ -815,10 +815,12 @@ main,
 
 .iso-perspective-wrap {
   width: 100%;
-  max-width: 720px;
+  max-width: 760px;
   margin: -16px auto;
-  transform: rotateX(36deg) rotateZ(-6deg) scale(1.08);
+  transform: rotateX(36deg) rotateZ(-6deg);
   transform-style: preserve-3d;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
   transition: transform 0.3s ease;
 }
 
@@ -828,19 +830,22 @@ main,
   grid-template-columns: repeat(13, minmax(0, 1fr));
   gap: 7px;
   transform-style: preserve-3d;
+  backface-visibility: hidden;
 }
 
 .iso-tile {
   aspect-ratio: 1 / 1;
   position: relative;
   border-radius: 5px;
-  border: 1px solid rgba(215, 26, 6, 0.38);
-  background: rgba(37, 1, 4, 0.76);
+  border: 1px solid rgba(215, 26, 6, 0.45);
+  background: rgba(37, 1, 4, 0.85);
   color: var(--text-primary);
   font-family: var(--font-mono);
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
   user-select: none;
   display: flex;
   align-items: center;

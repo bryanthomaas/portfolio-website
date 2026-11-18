@@ -12,7 +12,8 @@ Personal engineering portfolio and systems showcase for **Bryan Thomas**, Comput
 - **Featured Projects**: Filterable showcase of full-stack web applications, AI tools, and embedded systems research with direct repository links and architecture deep-dives.
 - **Technical Stack**: Categorized directory of languages, frameworks, cloud infrastructure, and hardware tools with production context notes.
 - **Verified Credentials**: Academic milestones including University of Cincinnati CeCredential validation and enterprise IT experience at Encore Technologies.
-- **OLED-Calibrated Design**: Inky deep-dark aesthetic with ambient ASCII background art, smooth scrolling (Lenis), and fluid layout animations (GSAP Flip).
+- **OLED-Calibrated Design**: Inky deep-dark aesthetic with smooth scrolling (Lenis) and fluid layout animations (GSAP Flip).
+- **Procedural ASCII Sky Background**: Real-time atmospheric cloud drift rendered via procedural ASCII math and canvas glyph atlas (`ascii-magic-art`), dynamically scaled to native display pixel ratios for razor-sharp fidelity.
 - **Fully Responsive**: Optimized for desktops, tablets, and mobile phone browsers with adaptive touch controls and mobile navigation.
 
 ---
@@ -23,6 +24,7 @@ Personal engineering portfolio and systems showcase for **Bryan Thomas**, Comput
 - **Build Tool**: [Vite 6](https://vitejs.dev/)
 - **Animations**: [GSAP 3](https://greensock.com/gsap/) (`ScrollTrigger`, `Flip`)
 - **Smooth Scrolling**: [Lenis](https://lenis.darkroom.engineering/)
+- **Background Art**: [ascii-magic-art](https://www.npmjs.com/package/ascii-magic-art) (procedural canvas glyph engine)
 - **Styling**: Semantic CSS with custom design tokens
 - **Deployment**: [Vercel](https://vercel.com/) with SPA routing and analytics
 
