@@ -18,6 +18,9 @@ const SKILL_TABS: { id: SkillFilter; label: string }[] = [
   { id: 'ai-tools', label: 'AI, Systems & IT' }
 ];
 
+/**
+ * Categorized technical skills grid with real-world production context notes.
+ */
 export const SkillsSection: React.FC<SkillsSectionProps> = React.memo(({
   skills,
   skillFilter,

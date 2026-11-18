@@ -3,15 +3,13 @@ import { AlgoSandbox3D } from './AlgoSandbox3D';
 
 interface HeroSectionProps {
   onNavigate: (sectionId: string) => void;
-  isFullscreen: boolean;
-  onToggleFullscreen: () => void;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = React.memo(({
-  onNavigate,
-  isFullscreen,
-  onToggleFullscreen
-}) => {
+/**
+ * Hero section displaying Bryan's headline, bio summary, quick CTA links,
+ * and the interactive 3D pathfinding sandbox.
+ */
+export const HeroSection: React.FC<HeroSectionProps> = React.memo(({ onNavigate }) => {
   return (
     <section className="section-container hero-section" id="hero">
       <div className="hero-grid">
@@ -94,10 +92,7 @@ export const HeroSection: React.FC<HeroSectionProps> = React.memo(({
 
         {/* Right: Interactive 3D Isometric Algorithm & Maze Engine */}
         <div className="hero-sim-card card">
-          <AlgoSandbox3D
-            isFullscreen={isFullscreen}
-            onToggleFullscreen={onToggleFullscreen}
-          />
+          <AlgoSandbox3D />
         </div>
       </div>
     </section>

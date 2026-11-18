@@ -6,6 +6,10 @@ interface ContactSectionProps {
   onFormSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 
+/**
+ * Contact section featuring direct communication channels with one-click copy
+ * and an interactive mailto contact form.
+ */
 export const ContactSection: React.FC<ContactSectionProps> = React.memo(({
   onCopyEmail,
   onCopyPhone,

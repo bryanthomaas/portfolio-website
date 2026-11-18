@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
 
 const ROWS = 9;
 const COLS = 13;
@@ -137,117 +136,41 @@ function solveGraph(terrain: Map<string, TerrainType>, mode: AlgoMode): SolveRes
 }
 
 export interface AlgoSandbox3DProps {
-  isFullscreen?: boolean;
-  onToggleFullscreen?: () => void;
-  isExpanded?: boolean;
-  onToggleExpand?: () => void;
+  className?: string;
 }
 
-export const AlgoSandbox3D: React.FC<AlgoSandbox3DProps> = React.memo(
-  ({
-    isFullscreen,
-    onToggleFullscreen,
-    isExpanded,
-    onToggleExpand
-  }) => {
-    const [internalFullscreen, setInternalFullscreen] = useState(false);
-    const isFullscreenActive = isFullscreen ?? isExpanded ?? internalFullscreen;
+export const AlgoSandbox3D: React.FC<AlgoSandbox3DProps> = React.memo(({ className = '' }) => {
+  const [algo, setAlgo] = useState<AlgoMode>('astar');
+  const [brush, setBrush] = useState<TerrainType>('wall');
+  const [terrain, setTerrain] = useState<Map<string, TerrainType>>(() => createDefaultTerrain());
+  const [visitedSet, setVisitedSet] = useState<Set<string>>(() => new Set());
+  const [pathSet, setPathSet] = useState<Set<string>>(() => new Set());
+  const [isRunning, setIsRunning] = useState<boolean>(false);
+  const [metrics, setMetrics] = useState<{
+    scanned: number;
+    cost: number;
+    optimalCost: number;
+    found: boolean;
+  }>({ scanned: 0, cost: 0, optimalCost: 0, found: true });
 
-    const [algo, setAlgo] = useState<AlgoMode>('astar');
-    const [brush, setBrush] = useState<TerrainType>('wall');
-    const [terrain, setTerrain] = useState<Map<string, TerrainType>>(() => createDefaultTerrain());
-    const [visitedSet, setVisitedSet] = useState<Set<string>>(() => new Set());
-    const [pathSet, setPathSet] = useState<Set<string>>(() => new Set());
-    const [isRunning, setIsRunning] = useState<boolean>(false);
-    const [metrics, setMetrics] = useState<{
-      scanned: number;
-      cost: number;
-      optimalCost: number;
-      found: boolean;
-    }>({ scanned: 0, cost: 0, optimalCost: 0, found: true });
+  const isDrawingRef = useRef<boolean>(false);
+  const eraseModeRef = useRef<boolean>(false);
+  const timeoutsRef = useRef<number[]>([]);
 
-    const isDrawingRef = useRef<boolean>(false);
-    const eraseModeRef = useRef<boolean>(false);
-    const timeoutsRef = useRef<number[]>([]);
+  // Cancel any active step-by-step animation timers
+  const clearTimers = useCallback(() => {
+    timeoutsRef.current.forEach((id) => window.clearTimeout(id));
+    timeoutsRef.current = [];
+  }, []);
 
-    const clearTimers = useCallback(() => {
-      timeoutsRef.current.forEach((id) => window.clearTimeout(id));
-      timeoutsRef.current = [];
-    }, []);
-
-    const handleToggleFullscreen = useCallback(async () => {
-      const next = !isFullscreenActive;
-      if (onToggleFullscreen) {
-        onToggleFullscreen();
-      } else if (onToggleExpand) {
-        onToggleExpand();
-      } else {
-        setInternalFullscreen(next);
-      }
-
-      try {
-        if (next) {
-          if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
-            await document.documentElement.requestFullscreen().catch(() => {});
-          }
-        } else {
-          if (document.fullscreenElement) {
-            await document.exitFullscreen().catch(() => {});
-          }
-        }
-      } catch {
-        // Fallback to CSS overlay
-      }
-    }, [isFullscreenActive, onToggleFullscreen, onToggleExpand]);
-
-    // Native fullscreen change listener (e.g. user pressed ESC in browser native mode)
-    useEffect(() => {
-      const onFullscreenChange = () => {
-        if (!document.fullscreenElement && isFullscreenActive) {
-          if (onToggleFullscreen) {
-            onToggleFullscreen();
-          } else if (onToggleExpand) {
-            onToggleExpand();
-          } else {
-            setInternalFullscreen(false);
-          }
-        }
-      };
-      document.addEventListener('fullscreenchange', onFullscreenChange);
-      return () => document.removeEventListener('fullscreenchange', onFullscreenChange);
-    }, [isFullscreenActive, onToggleFullscreen, onToggleExpand]);
-
-    // Keyboard ESC listener
-    useEffect(() => {
-      if (!isFullscreenActive) return;
-      const onKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          handleToggleFullscreen();
-        }
-      };
-      window.addEventListener('keydown', onKeyDown);
-      return () => window.removeEventListener('keydown', onKeyDown);
-    }, [isFullscreenActive, handleToggleFullscreen]);
-
-    // Body scroll lock during fullscreen
-    useEffect(() => {
-      if (isFullscreenActive) {
-        document.body.style.overflow = 'hidden';
-      } else {
-        document.body.style.overflow = '';
-      }
-      return () => {
-        document.body.style.overflow = '';
-      };
-    }, [isFullscreenActive]);
-
-    useEffect(() => {
-      const onUp = () => {
-        isDrawingRef.current = false;
-      };
-      window.addEventListener('mouseup', onUp);
-      return () => window.removeEventListener('mouseup', onUp);
-    }, []);
+  // Stop mouse drag drawing when user releases mouse anywhere
+  useEffect(() => {
+    const onUp = () => {
+      isDrawingRef.current = false;
+    };
+    window.addEventListener('mouseup', onUp);
+    return () => window.removeEventListener('mouseup', onUp);
+  }, []);
 
   const executeSimulation = useCallback(
     (activeTerrain: Map<string, TerrainType>, activeAlgo: AlgoMode, animate = true) => {
@@ -393,48 +316,18 @@ export const AlgoSandbox3D: React.FC<AlgoSandbox3DProps> = React.memo(
     [metrics]
   );
 
-  const content = (
-    <div className={`caldera-sandbox iso-workbench ${isFullscreenActive ? 'is-fullscreen' : ''}`}>
-      {/* Top Header: Title, Fullscreen Toggle, Description & Live Telemetry */}
+  return (
+    <div className={`caldera-sandbox iso-workbench ${className}`}>
+      {/* Header bar: Title, description & live search metrics */}
       <div className="iso-header-bar">
         <div className="iso-title-row">
           <div className="iso-title-group">
-            <h3 className="iso-title">
-              3D Pathfinding Sandbox
-              {isFullscreenActive && <span className="iso-fs-badge">Fullscreen Lab</span>}
-            </h3>
+            <h3 className="iso-title">3D Pathfinding Sandbox</h3>
             <p className="iso-instructions">
               Interactive preview of my 3D AlgoVisualizer. Click or drag to draw walls and terrain, then compare how{' '}
               <strong>A*</strong> routes around high-cost Mountains (cost 10) and Swamps (cost 5) while <strong>BFS</strong> ignores terrain costs completely.
             </p>
           </div>
-          <button
-            type="button"
-            className={`iso-expand-btn btn btn-sm ${isFullscreenActive ? 'btn-primary' : 'btn-surface'}`}
-            onClick={handleToggleFullscreen}
-            title={isFullscreenActive ? 'Exit full screen (ESC)' : 'Enter true full screen laboratory mode (ESC to exit)'}
-            aria-label={isFullscreenActive ? 'Exit full screen mode' : 'Open true full screen laboratory mode'}
-          >
-            {isFullscreenActive ? (
-              <>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-                <span>Exit Fullscreen (ESC)</span>
-              </>
-            ) : (
-              <>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-                  <polyline points="15 3 21 3 21 9" />
-                  <polyline points="9 21 3 21 3 15" />
-                  <line x1="21" y1="3" x2="14" y2="10" />
-                  <line x1="3" y1="21" x2="10" y2="14" />
-                </svg>
-                <span>Fullscreen ⛶</span>
-              </>
-            )}
-          </button>
         </div>
 
         <div className="iso-telemetry-bar">
@@ -634,19 +527,6 @@ export const AlgoSandbox3D: React.FC<AlgoSandbox3DProps> = React.memo(
       </div>
     </div>
   );
-
-  if (isFullscreenActive && typeof document !== 'undefined') {
-    return (
-      <>
-        <div className="iso-placeholder-card" aria-hidden="true">
-          <span>Active in Fullscreen Laboratory Mode (ESC to return)</span>
-        </div>
-        {createPortal(content, document.body)}
-      </>
-    );
-  }
-
-  return content;
 });
 
 AlgoSandbox3D.displayName = 'AlgoSandbox3D';

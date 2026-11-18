@@ -6,6 +6,9 @@ interface FooterProps {
   onOpenResume: () => void;
 }
 
+/**
+ * Site footer with brand identification, tech stack credits, and external profiles.
+ */
 export const Footer: React.FC<FooterProps> = React.memo(({
   onNavigate,
   onOpenResume

@@ -20,6 +20,9 @@ const FILTER_TABS: { id: ProjectFilter; label: string }[] = [
   { id: 'hardware-rf', label: 'Embedded & RF' }
 ];
 
+/**
+ * Featured projects section with category filter pills and animated grid.
+ */
 export const ProjectsSection: React.FC<ProjectsSectionProps> = React.memo(({
   projects,
   projectFilter,

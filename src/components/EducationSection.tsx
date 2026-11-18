@@ -5,6 +5,9 @@ interface EducationSectionProps {
   education: EducationEntry[];
 }
 
+/**
+ * Education timeline displaying academic history, honors, and verified CeCredential data.
+ */
 export const EducationSection: React.FC<EducationSectionProps> = React.memo(({ education }) => {
   return (
     <section className="section-container" id="education">

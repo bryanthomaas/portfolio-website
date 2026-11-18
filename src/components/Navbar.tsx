@@ -17,6 +17,10 @@ const NAV_ITEMS = [
   { id: 'contact', label: 'Contact' }
 ] as const;
 
+/**
+ * Sticky navigation dock with active section tracking, command palette search trigger,
+ * resume download CTA, and responsive mobile navigation.
+ */
 export const Navbar: React.FC<NavbarProps> = React.memo(({
   activeSection,
   mobileMenuOpen,

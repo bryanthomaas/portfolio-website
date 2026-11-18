@@ -7,6 +7,10 @@ interface ProjectCardProps {
   onInspect: (id: ProjectItem['id']) => void;
 }
 
+/**
+ * Individual project card featuring visual interactive preview, domain tags,
+ * engineering highlights, and GitHub repository link.
+ */
 export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, onInspect }) => {
   return (
     <div className="project-flip-item" data-flip-id={project.id}>

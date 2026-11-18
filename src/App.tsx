@@ -20,6 +20,10 @@ import { PROJECTS, SKILLS, EDUCATION, EXPERIENCE, type ProjectItem } from './dat
 
 gsap.registerPlugin(useGSAP, ScrollTrigger, Flip);
 
+/**
+ * Main application orchestrator managing global theme, Lenis smooth scrolling,
+ * GSAP ScrollTrigger/Flip animations, section spy, and modal overlays.
+ */
 export const App: React.FC = () => {
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     const saved = localStorage.getItem('bt-portfolio-theme');
@@ -36,7 +40,6 @@ export const App: React.FC = () => {
   const [activeProjectModal, setActiveProjectModal] = useState<ProjectItem['id'] | null>(null);
   const [isResumeOpen, setIsResumeOpen] = useState<boolean>(false);
   const [isCmdOpen, setIsCmdOpen] = useState<boolean>(false);
-  const [isSandboxFullscreen, setIsSandboxFullscreen] = useState<boolean>(false);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   const appRootRef = useRef<HTMLDivElement | null>(null);
@@ -322,11 +325,7 @@ export const App: React.FC = () => {
 
       <main>
         {/* Hero Section */}
-        <HeroSection
-          onNavigate={scrollToSection}
-          isFullscreen={isSandboxFullscreen}
-          onToggleFullscreen={() => setIsSandboxFullscreen((prev) => !prev)}
-        />
+        <HeroSection onNavigate={scrollToSection} />
 
         {/* Featured Projects */}
         <ProjectsSection

@@ -5,6 +5,9 @@ interface ExperienceSectionProps {
   experience: TimelineEntry[];
 }
 
+/**
+ * Professional experience timeline highlighting industry roles and achievements.
+ */
 export const ExperienceSection: React.FC<ExperienceSectionProps> = React.memo(({ experience }) => {
   return (
     <section className="section-container" id="experience">
