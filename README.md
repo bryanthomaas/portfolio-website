@@ -1,72 +1,30 @@
-# Bryan Thomas — Portfolio & Systems Engineering Showcase
+# Bryan Thomas — Portfolio
 
-Personal engineering portfolio for **Bryan Thomas** (`@bryanthomaas`), Computer Engineering graduate from the **University of Cincinnati (CEAS)**.
+Personal engineering portfolio and systems showcase for **Bryan Thomas**, Computer Engineering graduate from the **University of Cincinnati**.
 
-Live at: [https://bryanthomas.dev](https://bryanthomas.dev) *(or localhost:8080)*
+**Live Site**: [bryanthomas.site](https://bryanthomas.site)
 
 ---
 
-## Overview
+## Features
 
-This repository contains the source code for my personal engineering portfolio. It showcases full-stack web applications, developer tooling, 3D algorithms, and embedded systems research, built with a focus on performant rendering, tactile feedback, and accessible interface design.
-
-### Core Highlights
-
-- **Interactive 3D Pathfinding Engine**: A custom-built, isometric grid simulation featuring weighted pathfinding algorithms (A\*, Dijkstra, BFS, and Greedy Search) with dynamic terrain brushes (Walls, Mountains, Swamps), real-time cost telemetry, and a True Fullscreen Laboratory Mode.
-- **Featured Projects Showcase**: Filterable gallery of real production systems and open-source tools with direct links to GitHub repositories, architecture breakdowns, and tech stack tags.
-- **Technical Stack Arsenal**: Comprehensive matrix of programming languages, frameworks, cloud services, and developer tools with real-world production contexts.
-- **Academic & Professional Timelines**: Single-file, chronological timelines highlighting verified degree credentials from the University of Cincinnati (CeDiD verified) and professional enterprise IT experience at Encore Technologies.
-- **Command Palette & Keyboard Navigation**: <kbd>Ctrl</kbd> + <kbd>K</kbd> / <kbd>⌘K</kbd> quick navigation, interactive contact routing, and high-contrast color token architecture.
+- **3D Pathfinding Sandbox**: Interactive isometric grid running A*, Dijkstra, BFS, and Greedy Search with real-time terrain manipulation (Mountains, Swamps, Walls) and route cost telemetry.
+- **Featured Projects**: Filterable showcase of full-stack web applications, AI tools, and embedded systems research with direct repository links and architecture deep-dives.
+- **Technical Stack**: Categorized directory of languages, frameworks, cloud infrastructure, and hardware tools with production context notes.
+- **Verified Credentials**: Academic milestones including University of Cincinnati CeCredential validation and enterprise IT experience at Encore Technologies.
+- **OLED-Calibrated Design**: Inky deep-dark aesthetic with ambient ASCII background art, smooth scrolling (Lenis), and fluid layout animations (GSAP Flip).
+- **Fully Responsive**: Optimized for desktops, tablets, and mobile phone browsers with adaptive touch controls and mobile navigation.
 
 ---
 
 ## Tech Stack
 
-- **Framework**: [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
-- **Bundler**: [Vite 6](https://vitejs.dev/)
-- **Animation & Transitions**: [GSAP 3](https://greensock.com/gsap/) (`ScrollTrigger`, `Flip`)
-- **Smooth Scroll**: [Lenis](https://lenis.darkroom.engineering/)
-- **Styling Architecture**: Semantic Vanilla CSS with CSS custom properties (design tokens in `src/styles/tokens.css` and component rules in `src/styles/app.css`)
-- **Deployment**: Static asset build optimized for Vercel, Netlify, or GitHub Pages
-
----
-
-## Project Structure
-
-```text
-bryan-thomas-portfolio/
-├── public/
-│   ├── images/                 # Project screenshots and diagrams
-│   ├── Bryan_Thomas_Resume.pdf # Printable PDF engineering resume
-│   └── favicon.svg             # Custom SVG brand favicon
-├── src/
-│   ├── components/             # Modular UI components
-│   │   ├── AlgoSandbox3D.tsx   # 3D Isometric pathfinding simulation engine
-│   │   ├── AsciiSkyBackground.tsx # Lightweight ASCII ambient backdrop
-│   │   ├── BrandLogo.tsx       # SVG vector brand mark
-│   │   ├── ContactSection.tsx  # Direct communication & inquiry form
-│   │   ├── EducationSection.tsx # Academic timeline & CeCredential verification
-│   │   ├── ExperienceSection.tsx # Enterprise IT & research experience
-│   │   ├── Footer.tsx          # Colophon, status, and external links
-│   │   ├── HeroSection.tsx     # Intro bio and 3D preview cards
-│   │   ├── Modals.tsx          # Command palette, project architecture, & resume
-│   │   ├── Navbar.tsx          # Sticky navigation dock & mobile drawer
-│   │   ├── ProjectCard.tsx     # Individual project card component
-│   │   ├── ProjectsSection.tsx # Filterable featured projects grid
-│   │   ├── ProjectVisuals.tsx  # Pipeline and metric project visualizers
-│   │   └── SkillsSection.tsx   # Categorized technical stack cards
-│   ├── data/
-│   │   └── portfolioData.ts    # Centralized data model for projects, stack, & experience
-│   ├── styles/
-│   │   ├── app.css             # Component layout and responsive rules
-│   │   └── tokens.css          # Color ramps, typography, and spacing tokens
-│   ├── projects.config.ts      # Project metadata configuration
-│   ├── App.tsx                 # Main application orchestrator
-│   └── main.tsx                # React root entry point
-├── package.json
-├── tsconfig.json
-└── vite.config.ts
-```
+- **Frontend**: [React 19](https://react.dev/), [TypeScript](https://www.typescriptlang.org/)
+- **Build Tool**: [Vite 6](https://vitejs.dev/)
+- **Animations**: [GSAP 3](https://greensock.com/gsap/) (`ScrollTrigger`, `Flip`)
+- **Smooth Scrolling**: [Lenis](https://lenis.darkroom.engineering/)
+- **Styling**: Semantic CSS with custom design tokens
+- **Deployment**: [Vercel](https://vercel.com/) with SPA routing and analytics
 
 ---
 
@@ -74,15 +32,15 @@ bryan-thomas-portfolio/
 
 ### Prerequisites
 
-- Node.js 18.x or later
+- Node.js 18+
 - npm or pnpm
 
-### Installation
+### Local Development
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/bryanthomaas/bryan-thomas-portfolio.git
-   cd bryan-thomas-portfolio
+   git clone https://github.com/bryanthomaas/portfolio-website.git
+   cd portfolio-website
    ```
 
 2. Install dependencies:
@@ -90,28 +48,16 @@ bryan-thomas-portfolio/
    npm install
    ```
 
-3. Start the local development server:
+3. Start the dev server:
    ```bash
    npm run dev
    ```
+   Open `http://localhost:8080` in your browser.
 
-   The application will be running at `http://localhost:8080`.
-
----
-
-## Production Build
-
-To compile a production-ready static build:
+### Production Build
 
 ```bash
 npm run build
-```
-
-This compiles TypeScript (`tsc -b`) and bundles static assets into `dist/`.
-
-To preview the production build locally:
-
-```bash
 npm run preview
 ```
 
