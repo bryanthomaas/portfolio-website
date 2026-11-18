@@ -115,23 +115,22 @@ main,
   width: 100vw !important;
   height: 100vh !important;
   object-fit: cover;
-  opacity: 0.42;
+  opacity: 0.32;
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
 }
 
 [data-theme="light"] .ascii-sky-canvas-wrapper canvas {
-  opacity: 0.30;
+  opacity: 0.32;
 }
 
 .ascii-sky-overlay {
   position: absolute;
   inset: 0;
   background: radial-gradient(
-    ellipse at 50% 45%,
-    rgba(16, 1, 3, 0.15) 0%,
-    rgba(16, 1, 3, 0.35) 60%,
-    rgba(10, 0, 2, 0.70) 100%
+    ellipse at 50% 50%,
+    transparent 40%,
+    rgba(50, 3, 7, 0.5) 100%
   );
   pointer-events: none;
 }
