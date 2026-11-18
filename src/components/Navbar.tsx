@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrandLogo } from './BrandLogo';
 
 interface NavbarProps {
   activeSection: string;
@@ -40,6 +41,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             onNavigate('#hero');
           }}
         >
+          <BrandLogo size={30} />
           <div className="brand-text">
             <span className="brand-name">Bryan Thomas</span>
             <span className="brand-sub">Computer Engineer · Full-Stack Systems</span>

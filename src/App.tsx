@@ -64,9 +64,9 @@ export const App: React.FC = () => {
     localStorage.setItem('bt-portfolio-theme', theme);
   }, [theme]);
 
-  // Brand SVG Favicon
+  // Brand SVG Favicon - 2-Color Isometric Systems Matrix (#D71A06 & #FFFFFF)
   useEffect(() => {
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none"><rect x="2" y="2" width="60" height="60" rx="8" fill="#250104" stroke="#CDF73D" stroke-width="3.5"/><rect x="7" y="7" width="50" height="50" rx="5" stroke="#D71A06" stroke-width="1.5" stroke-opacity="0.7"/><path d="M14 16H27.5C32 16 35 18.4 35 22.2C35 25 33.3 27 30.5 27.8C33.8 28.6 36 31 36 34.5C36 39 32.3 42 27 42H14V16ZM20.2 21V26H26.2C28 26 29.2 25 29.2 23.5C29.2 22 28 21 26.2 21H20.2ZM20.2 30.5V36.8H26.8C28.6 36.8 30 35.7 30 33.7C30 31.7 28.6 30.5 26.8 30.5H20.2Z" fill="#D71A06"/><path d="M32 16H51V21.5H44.5V48H38.5V21.5H32V16Z" fill="#CDF73D"/><path d="M17 42V48L22 51H31" stroke="#CDF73D" stroke-width="2.5" stroke-linecap="square" stroke-linejoin="miter"/><rect x="30" y="48.5" width="5" height="5" fill="#CDF73D"/><rect x="47" y="28" width="4.5" height="4.5" fill="#D71A06"/></svg>`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none"><rect width="64" height="64" rx="14" fill="#D71A06"/><polygon points="32,13 50,23 32,33 14,23" fill="#FFFFFF"/><polygon points="14,26 30,35 30,51 14,42" fill="#FFFFFF"/><polygon points="18,34 26,38.5 26,45 18,40.5" fill="#D71A06"/><polygon points="34,35 50,26 50,42 34,51" fill="#FFFFFF"/><circle cx="42" cy="38.5" r="3.5" fill="#D71A06"/></svg>`;
     const dataUri = `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
     let link = document.querySelector<HTMLLinkElement>("link[rel='icon']");
     if (!link) {
@@ -76,6 +76,11 @@ export const App: React.FC = () => {
     }
     link.type = 'image/svg+xml';
     link.href = dataUri;
+
+    const appleLink = document.querySelector<HTMLLinkElement>("link[rel='apple-touch-icon']");
+    if (appleLink) {
+      appleLink.href = dataUri;
+    }
   }, []);
 
   const toggleTheme = useCallback(() => {
@@ -89,10 +94,10 @@ export const App: React.FC = () => {
   // Lenis smooth scroll
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 0.8,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      autoRaf: true,
       smoothWheel: true,
-      wheelMultiplier: 1.0,
+      lerp: 0.09,
+      wheelMultiplier: 0.95,
       touchMultiplier: 1.5
     });
     lenisRef.current = lenis;
@@ -101,15 +106,9 @@ export const App: React.FC = () => {
       ScrollTrigger.update();
     });
 
-    const updateLenis = (time: number) => {
-      lenis.raf(time * 1000);
-    };
-
-    gsap.ticker.add(updateLenis);
-    gsap.ticker.lagSmoothing(0);
+    gsap.ticker.lagSmoothing(500, 33);
 
     return () => {
-      gsap.ticker.remove(updateLenis);
       lenis.destroy();
       lenisRef.current = null;
     };
@@ -137,7 +136,7 @@ export const App: React.FC = () => {
     if (lenisRef.current) {
       lenisRef.current.scrollTo(id === 'hero' ? 0 : target, {
         offset: 0,
-        duration: 0.8,
+        duration: 1.0,
         force: true,
         onComplete: () => {
           navLockRef.current = false;
