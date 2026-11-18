@@ -186,8 +186,9 @@ main,
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-md);
+  border-radius: 50%;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .brand-logo-svg {
