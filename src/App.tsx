@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Flip } from 'gsap/Flip';
 import { useGSAP } from '@gsap/react';
 import Lenis from 'lenis';
+import { Analytics } from '@vercel/analytics/react';
 
 import { AsciiSkyBackground } from './components/AsciiSkyBackground';
 import { Navbar } from './components/Navbar';
@@ -386,6 +387,9 @@ export const App: React.FC = () => {
           <span>{toastMsg}</span>
         </div>
       )}
+
+      {/* Vercel Web Analytics */}
+      <Analytics />
     </div>
   );
 };
