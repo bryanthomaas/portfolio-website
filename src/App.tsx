@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Flip } from 'gsap/Flip';
@@ -27,11 +27,6 @@ gsap.registerPlugin(useGSAP, ScrollTrigger, Flip);
  * GSAP ScrollTrigger/Flip animations, section spy, and modal overlays.
  */
 export const App: React.FC = () => {
-  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
-    const saved = localStorage.getItem('bt-portfolio-theme');
-    return saved === 'light' ? 'light' : 'dark';
-  });
-
   const [activeSection, setActiveSection] = useState<string>('hero');
   const activeSectionRef = useRef<string>('hero');
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
@@ -58,16 +53,14 @@ export const App: React.FC = () => {
     toastTimerRef.current = window.setTimeout(() => {
       setToastMsg(null);
     }, 2800);
+    return () => {
+      if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current);
+    };
   }, []);
 
+  // Brand SVG Favicon - Monochrome Obsidian & White with Warm Amber Spark (#000000, #FFFFFF, #F59E0B)
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('bt-portfolio-theme', theme);
-  }, [theme]);
-
-  // Brand SVG Favicon - 2-Color Isometric Systems Matrix (#D71A06 & #FFFFFF)
-  useEffect(() => {
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none"><rect width="64" height="64" rx="14" fill="#D71A06"/><polygon points="32,13 50,23 32,33 14,23" fill="#FFFFFF"/><polygon points="14,26 30,35 30,51 14,42" fill="#FFFFFF"/><polygon points="18,34 26,38.5 26,45 18,40.5" fill="#D71A06"/><polygon points="34,35 50,26 50,42 34,51" fill="#FFFFFF"/><circle cx="42" cy="38.5" r="3.5" fill="#D71A06"/></svg>`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none"><rect width="64" height="64" rx="14" fill="#000000" stroke="rgba(255,255,255,0.25)" stroke-width="2"/><polygon points="32,13 50,23 32,33 14,23" fill="#FFFFFF"/><polygon points="14,26 30,35 30,51 14,42" fill="#FFFFFF"/><polygon points="18,34 26,38.5 26,45 18,40.5" fill="#000000"/><polygon points="34,35 50,26 50,42 34,51" fill="#FFFFFF"/><circle cx="42" cy="38.5" r="3.5" fill="#F59E0B"/></svg>`;
     const dataUri = `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
     let link = document.querySelector<HTMLLinkElement>("link[rel='icon']");
     if (!link) {
@@ -84,22 +77,15 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const toggleTheme = useCallback(() => {
-    setTheme((prev) => {
-      const next = prev === 'dark' ? 'light' : 'dark';
-      showToast(next === 'dark' ? 'Switched to Dark Mode' : 'Switched to Light Mode');
-      return next;
-    });
-  }, [showToast]);
-
   // Lenis smooth scroll
   useEffect(() => {
     const lenis = new Lenis({
-      autoRaf: true,
+      autoRaf: false,
       smoothWheel: true,
       lerp: 0.09,
       wheelMultiplier: 0.95,
-      touchMultiplier: 1.5
+      touchMultiplier: 1.5,
+      respectReducedMotion: false
     });
     lenisRef.current = lenis;
 
@@ -107,9 +93,14 @@ export const App: React.FC = () => {
       ScrollTrigger.update();
     });
 
-    gsap.ticker.lagSmoothing(500, 33);
+    const updateLenis = (time: number) => {
+      lenis.raf(time * 1000);
+    };
+    gsap.ticker.add(updateLenis);
+    gsap.ticker.lagSmoothing(0);
 
     return () => {
+      gsap.ticker.remove(updateLenis);
       lenis.destroy();
       lenisRef.current = null;
     };
@@ -120,34 +111,43 @@ export const App: React.FC = () => {
 
   const scrollToSection = useCallback((selector: string) => {
     setMobileMenuOpen(false);
-    const id = selector.replace(/^#/, '');
-    if (activeSectionRef.current !== id) {
-      activeSectionRef.current = id;
-      setActiveSection(id);
+    let id = selector.replace(/^#/, '');
+    // Normalize alias between 'stack' and 'skills'
+    let target = document.getElementById(id);
+    if (!target) {
+      if (id === 'stack') target = document.getElementById('skills');
+      else if (id === 'skills') target = document.getElementById('stack');
+      else target = document.querySelector<HTMLElement>(selector);
     }
-    const target = document.getElementById(id) || document.querySelector<HTMLElement>(selector);
-    if (!target) return;
+    if (!target && id !== 'hero') return;
+
+    const normalizedId = target?.id || (id === 'skills' ? 'stack' : id);
+    if (activeSectionRef.current !== normalizedId) {
+      activeSectionRef.current = normalizedId;
+      setActiveSection(normalizedId);
+    }
 
     navLockRef.current = true;
     if (navLockTimerRef.current) window.clearTimeout(navLockTimerRef.current);
     navLockTimerRef.current = window.setTimeout(() => {
       navLockRef.current = false;
-    }, 900);
+    }, 1400);
 
     if (lenisRef.current) {
-      lenisRef.current.scrollTo(id === 'hero' ? 0 : target, {
+      lenisRef.current.scrollTo(id === 'hero' ? 0 : target!, {
         offset: 0,
-        duration: 1.0,
+        duration: 1.1,
+        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         force: true,
         onComplete: () => {
           navLockRef.current = false;
-          if (activeSectionRef.current !== id) {
-            activeSectionRef.current = id;
-            setActiveSection(id);
+          if (activeSectionRef.current !== normalizedId) {
+            activeSectionRef.current = normalizedId;
+            setActiveSection(normalizedId);
           }
         }
       });
-    } else {
+    } else if (target) {
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, []);
@@ -169,7 +169,7 @@ export const App: React.FC = () => {
     () => {
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      const sections = ['hero', 'projects', 'skills', 'education', 'experience', 'contact'];
+      const sections = ['hero', 'projects', 'stack', 'skills', 'education', 'experience', 'contact'];
       sections.forEach((id, index) => {
         const el = document.getElementById(id);
         if (!el) return;
@@ -179,9 +179,12 @@ export const App: React.FC = () => {
           end: 'bottom 45%',
           refreshPriority: -index,
           onToggle: (self) => {
-            if (self.isActive && !navLockRef.current && activeSectionRef.current !== id) {
-              activeSectionRef.current = id;
-              setActiveSection(id);
+            if (self.isActive && !navLockRef.current) {
+              const targetId = (id === 'skills' || id === 'stack') ? 'stack' : id;
+              if (activeSectionRef.current !== targetId) {
+                activeSectionRef.current = targetId;
+                setActiveSection(targetId);
+              }
             }
           }
         });
@@ -209,7 +212,7 @@ export const App: React.FC = () => {
   );
 
   // Projects category filter with GSAP Flip
-  const handleProjectFilterChange = (nextFilter: ProjectFilter) => {
+  const handleProjectFilterChange = useCallback((nextFilter: ProjectFilter) => {
     if (nextFilter === projectFilter) return;
     if (projectsGridRef.current) {
       flipProjectStateRef.current = Flip.getState(
@@ -217,7 +220,7 @@ export const App: React.FC = () => {
       );
     }
     setProjectFilter(nextFilter);
-  };
+  }, [projectFilter]);
 
   useLayoutEffect(() => {
     if (!flipProjectStateRef.current) return;
@@ -240,7 +243,7 @@ export const App: React.FC = () => {
   }, [projectFilter]);
 
   // Skills category filter with GSAP Flip
-  const handleSkillFilterChange = (nextFilter: SkillFilter) => {
+  const handleSkillFilterChange = useCallback((nextFilter: SkillFilter) => {
     if (nextFilter === skillFilter) return;
     if (skillsGridRef.current) {
       flipSkillStateRef.current = Flip.getState(
@@ -248,7 +251,7 @@ export const App: React.FC = () => {
       );
     }
     setSkillFilter(nextFilter);
-  };
+  }, [skillFilter]);
 
   useLayoutEffect(() => {
     if (!flipSkillStateRef.current) return;
@@ -283,7 +286,7 @@ export const App: React.FC = () => {
     );
   }, [showToast]);
 
-  const handleContactSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleContactSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const data = new FormData(form);
@@ -300,14 +303,24 @@ export const App: React.FC = () => {
     );
     window.location.href = `mailto:thoma3ba@mail.uc.edu?subject=${mailtoSubject}&body=${mailtoBody}`;
     showToast('Opening email client for thoma3ba@mail.uc.edu...');
-  };
+  }, [showToast]);
 
-  const visibleProjects = PROJECTS.filter((p) =>
-    projectFilter === 'all' ? true : p.categories.includes(projectFilter)
+  const handleToggleMobileMenu = useCallback(() => setMobileMenuOpen((o) => !o), []);
+  const handleOpenSearch = useCallback(() => setIsCmdOpen(true), []);
+  const handleCloseCmd = useCallback(() => setIsCmdOpen(false), []);
+  const handleOpenResume = useCallback(() => setIsResumeOpen(true), []);
+  const handleCloseResume = useCallback(() => setIsResumeOpen(false), []);
+  const handleInspectProject = useCallback((id: ProjectItem['id']) => setActiveProjectModal(id), []);
+  const handleCloseProject = useCallback(() => setActiveProjectModal(null), []);
+
+  const visibleProjects = useMemo(
+    () => PROJECTS.filter((p) => (projectFilter === 'all' ? true : p.categories.includes(projectFilter))),
+    [projectFilter]
   );
 
-  const visibleSkills = SKILLS.filter((s) =>
-    skillFilter === 'all' ? true : s.group === skillFilter
+  const visibleSkills = useMemo(
+    () => SKILLS.filter((s) => (skillFilter === 'all' ? true : s.group === skillFilter)),
+    [skillFilter]
   );
 
   return (
@@ -319,9 +332,9 @@ export const App: React.FC = () => {
       <Navbar
         activeSection={activeSection}
         mobileMenuOpen={mobileMenuOpen}
-        onToggleMobileMenu={() => setMobileMenuOpen((o) => !o)}
+        onToggleMobileMenu={handleToggleMobileMenu}
         onNavigate={scrollToSection}
-        onOpenSearch={() => setIsCmdOpen(true)}
+        onOpenSearch={handleOpenSearch}
       />
 
       <main>
@@ -333,7 +346,7 @@ export const App: React.FC = () => {
           projects={visibleProjects}
           projectFilter={projectFilter}
           onFilterChange={handleProjectFilterChange}
-          onInspectProject={(id) => setActiveProjectModal(id)}
+          onInspectProject={handleInspectProject}
           gridRef={projectsGridRef}
         />
 
@@ -365,22 +378,21 @@ export const App: React.FC = () => {
       {/* Footer */}
       <Footer
         onNavigate={scrollToSection}
-        onOpenResume={() => setIsResumeOpen(true)}
+        onOpenResume={handleOpenResume}
       />
 
       {/* Modals & Dialogs */}
       <Modals
         activeProjectId={activeProjectModal}
-        onCloseProject={() => setActiveProjectModal(null)}
+        onCloseProject={handleCloseProject}
         isResumeOpen={isResumeOpen}
-        onCloseResume={() => setIsResumeOpen(false)}
+        onCloseResume={handleCloseResume}
         isCmdOpen={isCmdOpen}
-        onCloseCmd={() => setIsCmdOpen(false)}
-        onNavigate={(href) => scrollToSection(href)}
-        onToggleTheme={toggleTheme}
+        onCloseCmd={handleCloseCmd}
+        onNavigate={scrollToSection}
         onCopyEmail={handleCopyEmail}
         onCopyPhone={handleCopyPhone}
-        onOpenResume={() => setIsResumeOpen(true)}
+        onOpenResume={handleOpenResume}
       />
 
       {/* Toast Feedback */}

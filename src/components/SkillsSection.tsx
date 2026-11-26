@@ -28,7 +28,8 @@ export const SkillsSection: React.FC<SkillsSectionProps> = React.memo(({
   gridRef
 }) => {
   return (
-    <section className="section-container" id="skills">
+    <section className="section-container" id="stack" data-section="skills" style={{ position: 'relative' }}>
+      <span id="skills" aria-hidden="true" style={{ position: 'absolute', top: 0, pointerEvents: 'none' }} />
       <div className="section-header">
         <div className="section-header-row">
           <div>

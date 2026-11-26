@@ -12,7 +12,7 @@ interface NavbarProps {
 const NAV_ITEMS = [
   { id: 'hero', label: 'Overview' },
   { id: 'projects', label: 'Projects' },
-  { id: 'skills', label: 'Stack' },
+  { id: 'stack', label: 'Stack' },
   { id: 'education', label: 'Education' },
   { id: 'experience', label: 'Experience' },
   { id: 'contact', label: 'Contact' }
@@ -54,7 +54,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
               <li key={nav.id}>
                 <a
                   href={`#${nav.id}`}
-                  className={`nav-link ${activeSection === nav.id ? 'active' : ''}`}
+                  className={`nav-link ${activeSection === nav.id || (nav.id === 'stack' && activeSection === 'skills') ? 'active' : ''}`}
                   onClick={(e) => {
                     e.preventDefault();
                     onNavigate(`#${nav.id}`);
