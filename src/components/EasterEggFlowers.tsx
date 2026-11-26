@@ -49,6 +49,8 @@ export const EasterEggFlowers: React.FC = React.memo(() => {
   const hasTriggeredRef = useRef<boolean>(false);
   const isPreppingRef = useRef<boolean>(false);
   const isLoopRunningRef = useRef<boolean>(false);
+  const isVisibleRef = useRef<boolean>(false);
+  const isUnmountedRef = useRef<boolean>(false);
 
   const totalFramesRef = useRef<number>(31);
   const dimsRef = useRef({ cols: DEFAULT_COLS, rows: DEFAULT_ROWS });
@@ -120,23 +122,37 @@ export const EasterEggFlowers: React.FC = React.memo(() => {
     prepStep();
   }, [renderSingleFrameToCanvas]);
 
+  const stopAnimationLoop = useCallback(() => {
+    if (animFrameIdRef.current !== null) {
+      cancelAnimationFrame(animFrameIdRef.current);
+      animFrameIdRef.current = null;
+    }
+    isLoopRunningRef.current = false;
+  }, []);
+
   // Main 60 FPS animation loop with continuous alpha-interpolation
   const startAnimationLoop = useCallback(() => {
-    if (isLoopRunningRef.current) return;
-    isLoopRunningRef.current = true;
+    if (isLoopRunningRef.current || !isVisibleRef.current || document.hidden) return;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d', { alpha: false });
     if (!ctx) return;
 
-    if (animFrameIdRef.current) {
+    isLoopRunningRef.current = true;
+    if (animFrameIdRef.current !== null) {
       cancelAnimationFrame(animFrameIdRef.current);
     }
 
     startTimeRef.current = null;
 
     const render = (now: number) => {
+      if (!isLoopRunningRef.current || !isVisibleRef.current || document.hidden) {
+        isLoopRunningRef.current = false;
+        animFrameIdRef.current = null;
+        return;
+      }
+
       if (!startTimeRef.current) startTimeRef.current = now;
       const totalElapsed = (now - startTimeRef.current) % CYCLE_DURATION;
       const { w, h, dpr } = sizeRef.current;
@@ -145,9 +161,9 @@ export const EasterEggFlowers: React.FC = React.memo(() => {
       const cellH = h / rows;
       const canvases = offscreenCanvasesRef.current;
 
-      // Always clear to deep obsidian black
+      // Always clear to deep OLED black
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.fillStyle = '#050002';
+      ctx.fillStyle = '#050505';
       ctx.fillRect(0, 0, w, h);
 
       if (canvases.length > 0) {
@@ -239,7 +255,7 @@ export const EasterEggFlowers: React.FC = React.memo(() => {
     if (!canvas || !canvas.parentElement) return;
 
     const rect = canvas.parentElement.getBoundingClientRect();
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const dpr = Math.min(1.5, window.devicePixelRatio || 1);
     const w = rect.width || 520;
     const h = rect.height || 540;
 
@@ -255,6 +271,7 @@ export const EasterEggFlowers: React.FC = React.memo(() => {
     updateCanvasDimensions();
 
     import('../data/flowerData').then(({ FLOWER_DATA }) => {
+      if (isUnmountedRef.current) return;
       dimsRef.current = { cols: FLOWER_DATA.cols, rows: FLOWER_DATA.rows };
       totalFramesRef.current = FLOWER_DATA.frames.length;
 
@@ -297,8 +314,8 @@ export const EasterEggFlowers: React.FC = React.memo(() => {
         sizeRef.current.h,
         sizeRef.current.dpr,
         () => {
-          // As soon as the first few frames are ready, kick off animation loop smoothly
-          if (!isLoopRunningRef.current && offscreenCanvasesRef.current[0]) {
+          // Only spin up RAF if still scrolled into viewport and tab is visible
+          if (isVisibleRef.current && !document.hidden && !isLoopRunningRef.current && offscreenCanvasesRef.current[0]) {
             startAnimationLoop();
           }
         }
@@ -306,72 +323,58 @@ export const EasterEggFlowers: React.FC = React.memo(() => {
     });
   }, [updateCanvasDimensions, startAsyncPreRendering, startAnimationLoop]);
 
-  // Early idle pre-load: after initial mount, load flowerData in idle background
-  useEffect(() => {
-    let timerId: number | null = null;
-    const win = window as any;
-
-    if (typeof win.requestIdleCallback === 'function') {
-      const id = win.requestIdleCallback(
-        () => {
-          loadAndPrepare();
-        },
-        { timeout: 2500 }
-      );
-      return () => {
-        if (typeof win.cancelIdleCallback === 'function') {
-          win.cancelIdleCallback(id);
-        }
-      };
-    } else {
-      timerId = window.setTimeout(() => {
-        loadAndPrepare();
-      }, 1500);
-      return () => {
-        if (timerId !== null) window.clearTimeout(timerId);
-      };
-    }
-  }, [loadAndPrepare]);
-
-  // Viewport intersection trigger: reveal section and ensure animation is active
+  // Viewport + visibility gated loading and RAF lifecycle (zero offscreen CPU/GPU burn)
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
+    isUnmountedRef.current = false;
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopAnimationLoop();
+      } else if (isVisibleRef.current && offscreenCanvasesRef.current.length > 0) {
+        startAnimationLoop();
+      }
+    };
 
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
         if (entry.isIntersecting) {
+          isVisibleRef.current = true;
           setIsRevealed(true);
 
           if (!hasTriggeredRef.current) {
             hasTriggeredRef.current = true;
             updateCanvasDimensions();
-
-            // If not already prepared by idle callback, load and run immediately
             if (offscreenCanvasesRef.current.length === 0 && !isPreppingRef.current) {
               loadAndPrepare();
-            } else if (!isLoopRunningRef.current) {
-              startAnimationLoop();
             }
+          } else if (offscreenCanvasesRef.current.length > 0) {
+            startAnimationLoop();
           }
+        } else {
+          isVisibleRef.current = false;
+          stopAnimationLoop();
         }
       },
-      { threshold: 0.1, rootMargin: '200px' }
+      { threshold: 0.05, rootMargin: '400px 0px' }
     );
 
     observer.observe(el);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
+      isUnmountedRef.current = true;
+      isVisibleRef.current = false;
       observer.disconnect();
-      if (animFrameIdRef.current) {
-        cancelAnimationFrame(animFrameIdRef.current);
-      }
-      if (prepFrameIdRef.current) {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      stopAnimationLoop();
+      if (prepFrameIdRef.current !== null) {
         cancelAnimationFrame(prepFrameIdRef.current);
       }
     };
-  }, [updateCanvasDimensions, loadAndPrepare, startAnimationLoop]);
+  }, [updateCanvasDimensions, loadAndPrepare, startAnimationLoop, stopAnimationLoop]);
 
   return (
     <section
