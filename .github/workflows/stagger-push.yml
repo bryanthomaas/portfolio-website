@@ -1,0 +1,47 @@
+name: Staggered Commit Push
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Runs hourly at :00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  stagger-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch stagger-queue
+        run: git fetch origin stagger-queue
+
+      - name: Cherry-pick next queued commit
+        run: |
+          git config user.name "Bryan Thomas"
+          git config user.email "thoma3ba@mail.uc.edu"
+
+          COMMITS=(
+            "c77893f6dc458a177addddfc19705380c5fc98f7"
+            "f98a918f8087cb255a83cee1d0bec557717d4500"
+            "9b967cdc4a6e946d044bf78423cc1cb327f8839c"
+            "217bac7cdb79e03de3ced6954f1a5fd50238cf45"
+          )
+
+          RECENT_SUBJECTS=$(git log -n 20 --format=%s origin/main)
+
+          for sha in "${COMMITS[@]}"; do
+            subject=$(git log -1 --format=%s "$sha")
+            if ! echo "$RECENT_SUBJECTS" | grep -Fxq "$subject"; then
+              echo "Applying $sha ($subject)"
+              git cherry-pick "$sha"
+              git push origin main
+              exit 0
+            fi
+          done
+
+          echo "All queued commits are already on main."
