@@ -324,7 +324,7 @@ export const AlgoSandbox3D: React.FC<AlgoSandbox3DProps> = React.memo(({ classNa
           <div className="iso-title-group">
             <h3 className="iso-title">3D Pathfinding Sandbox</h3>
             <p className="iso-instructions">
-              Interactive preview of my 3D AlgoVisualizer. Click or drag to draw walls and terrain, then compare how{' '}
+              Interactive preview of my AlgoVision 2.0 Pathfinder studio. Click or drag to draw walls and terrain, then compare how{' '}
               <strong>A*</strong> routes around high-cost Mountains (cost 10) and Swamps (cost 5) while <strong>BFS</strong> ignores terrain costs completely.
             </p>
           </div>

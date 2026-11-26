@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { DrawSVGPlugin } from 'gsap/DrawSVGPlugin';
@@ -14,6 +14,7 @@ interface ProjectVisualProps {
 
 export const ProjectVisual: React.FC<ProjectVisualProps> = React.memo(({ project, onInspect }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const [activeSlide, setActiveSlide] = useState(0);
 
   useGSAP(
     () => {
@@ -42,11 +43,16 @@ export const ProjectVisual: React.FC<ProjectVisualProps> = React.memo(({ project
   const visual = project.visual;
 
   if (visual?.type === 'image') {
+    const slides = visual.gallery && visual.gallery.length > 0 ? visual.gallery : null;
+    const current = slides ? slides[activeSlide] ?? slides[0] : null;
+    const src = current ? current.url : visual.imageUrl;
+    const alt = current ? current.alt : visual.imageAlt || `${project.title} preview`;
+
     return (
       <div className="project-visual" ref={containerRef}>
         <img
-          src={visual.imageUrl}
-          alt={visual.imageAlt || `${project.title} preview`}
+          src={src}
+          alt={alt}
           className="project-img"
           width="600"
           height="338"
@@ -54,16 +60,37 @@ export const ProjectVisual: React.FC<ProjectVisualProps> = React.memo(({ project
           decoding="async"
           referrerPolicy="no-referrer"
         />
-        <div className="project-overlay">
-          <a
-            href={project.repo}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-primary btn-sm"
-          >
-            GitHub Repository ↗
-          </a>
-        </div>
+        {!slides && (
+          <div className="project-overlay">
+            <a
+              href={project.repo}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-primary btn-sm"
+            >
+              GitHub Repository ↗
+            </a>
+          </div>
+        )}
+        {slides && slides.length > 1 && (
+          <div className="project-gallery-tabs" role="tablist" aria-label={`${project.title} screenshots`}>
+            {slides.map((slide, idx) => (
+              <button
+                key={slide.label}
+                type="button"
+                role="tab"
+                aria-selected={activeSlide === idx}
+                className={`project-gallery-tab ${activeSlide === idx ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveSlide(idx);
+                }}
+              >
+                {slide.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     );
   }

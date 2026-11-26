@@ -20,6 +20,7 @@ export type ProjectVisualConfig =
       type: 'image';
       imageUrl: string;
       imageAlt?: string;
+      gallery?: { url: string; alt: string; label: string }[];
     }
   | {
       type: 'pipeline';
@@ -130,64 +131,78 @@ export const PROJECTS: ProjectItem[] = [
   {
     id: 'algo-visualizer',
     code: 'Frontend & Algorithm Engine',
-    domainTag: 'React 19 · Vite · Framer Motion',
+    domainTag: 'React 19 · TypeScript 6 · Vite 8 · Tailwind v4',
     categories: ['frontend-3d', 'fullstack'],
-    title: '3D Isometric AlgoVisualizer',
-    subtitle: 'Interactive 3D Pathfinding & Maze Generator',
+    title: 'AlgoVision 2.0',
+    subtitle: 'Interactive 2.5D & Real-Time Algorithm Visualizer',
     repo: 'https://github.com/bryanthomaas/Algo-Visualizer',
     visual: {
       type: 'image',
       imageUrl: '/images/algo-visualizer.png',
-      imageAlt: '3D Isometric AlgoVisualizer interface screenshot'
+      imageAlt: 'AlgoVision 2.0 — 20×20 weighted isometric Pathfinder with live leaderboard and pseudocode trace',
+      gallery: [
+        {
+          url: '/images/algo-visualizer.png',
+          alt: 'AlgoVision 2.0 — 20×20 weighted isometric Pathfinder with live leaderboard and pseudocode trace',
+          label: 'Pathfinder'
+        },
+        {
+          url: '/images/algo-visualizer-sorting.png',
+          alt: 'AlgoVision 2.0 — Sorting Lab comparing QuickSort with live swap leaderboard and pseudocode trace',
+          label: 'Sorting Lab'
+        },
+        {
+          url: '/images/algo-visualizer-graphs.png',
+          alt: 'AlgoVision 2.0 — Trees & Graphs studio tracing Kruskal MST with Disjoint Set forest telemetry',
+          label: 'Trees & Graphs'
+        }
+      ]
     },
     description:
-      'Visualizes classic 2D pathfinding algorithms on an isometric 3D grid where tiles rise up as the search explores them, built with React 19, Vite, and Framer Motion.',
+      'Browser-based visualizer for pathfinding, sorting, graph, and BST algorithms built on deterministic 60fps immutable snapshots and synchronized pseudocode tracing.',
     bullets: [
-      'Renders a 2D grid in an isometric 3D view on HTML5 Canvas, animating tile height as algorithms search and lock in a final route.',
-      'Includes 8 pathfinding algorithms (Dijkstra, A* Manhattan/Euclidean, BFS, DFS, Greedy Best-First, Jump Point Search, Bidirectional BFS, and Swarm) and 4 maze generators (Cellular Automata, Kruskal\'s, Recursive Division, and Weighted Scatter).',
-      'Lets you paint weighted terrain (Swamps at cost 5, Mountains at cost 10), compare any algorithm\'s route against Dijkstra\'s optimal path, and scrub forward or backward through the search step by step.'
+      'Unifies three interactive studios: 20×20 weighted isometric Pathfinder (8 solvers, 4 connectivity-verified maze generators, 5× Swamps, 10× Mountains), Sorting Lab (5 algorithms across 8–64 items), and Trees & Graphs (Kruskal\'s/Prim\'s MST, Dijkstra, Tree BFS/DFS, BST Search/Insert).',
+      'Uses row-level structural sharing (snapshotHelper.ts) so React.memo skips unchanged rows during 60fps timeline scrubbing, backward stepping, and synchronized pseudocode highlighting.',
+      'Ranks peer algorithms in live non-blocking leaderboards with optional Web Audio pitch sonification, backed by oxlint and automated tests for optimality and WCAG 2.2 AA contrast.'
     ],
     tags: [
       'React 19',
       'TypeScript',
-      'Vite',
+      'Vite 8',
+      'Tailwind CSS v4',
       'Framer Motion',
       'HTML5 Canvas',
-      'Tailwind CSS',
-      'Graph Theory'
+      'Web Audio API',
+      'WCAG 2.2 AA'
     ],
     specSections: [
       {
-        heading: 'Pathfinding Algorithms & Optimization',
+        heading: 'Three Interactive Studios',
         items: [
           {
-            lead: 'Dijkstra & A* Heuristics:',
-            text: ' Finds the guaranteed cheapest path across weighted grids using Dijkstra\'s baseline alongside Manhattan and Euclidean A* heuristics.'
+            lead: 'Pathfinder (20×20 Isometric Grid):',
+            text: ' 8 solvers (Dijkstra, A*, BFS, DFS, GBFS, Bidirectional Dijkstra, JPS, Swarm), Bresenham weighted terrain brushes, 4 connectivity-verified maze generators, and chunked async peer benchmarking.'
           },
           {
-            lead: 'Search Optimization:',
-            text: ' Includes Jump Point Search (JPS) to skip redundant open-grid tiles and Bidirectional BFS to search from start and goal simultaneously.'
+            lead: 'Sorting Lab:',
+            text: ' QuickSort, MergeSort, HeapSort, RadixSort, and BubbleSort across 8–64 items and 4 distributions with a live swap/operation leaderboard.'
           },
           {
-            lead: 'Additional Solvers:',
-            text: ' Breadth-First Search (BFS), Depth-First Search (DFS), Greedy Best-First Search, and a multi-agent Swarm model.'
+            lead: 'Trees & Graphs:',
+            text: ' Kruskal\'s MST, Prim\'s MST, Graph Dijkstra, Tree BFS/DFS, and BST Search/Insert with draggable SVG vertices and live Disjoint Set, Min-Heap, Queue, and Stack telemetry.'
           }
         ]
       },
       {
-        heading: 'Maze Generators & Playback Telemetry',
+        heading: 'Snapshot Engine & Verification',
         items: [
           {
-            lead: '4 Maze Generators:',
-            text: ' Cellular Automata, Randomized Kruskal\'s, Recursive Division, and Weighted Random Scatter.'
+            lead: 'Structural-Sharing Playback:',
+            text: ' Row-level cloning (snapshotHelper.ts) powers clamped-delta 60fps playback (200ms–5ms/step), instant timeline scrubbing, synced pseudocode tracing, and Web Audio pitch sonification.'
           },
           {
-            lead: 'Weighted Terrain:',
-            text: ' Interactive brush for Swamps (cost 5), Mountains (cost 10), and Walls, rendered with dynamic 3D tile height.'
-          },
-          {
-            lead: 'Playback & Telemetry:',
-            text: ' Tracks visited node counts and total path cost in real time, validates optimality against Dijkstra\'s baseline, and supports frame-by-frame timeline scrubbing.'
+            lead: 'Stack & Test Suites:',
+            text: ' React 19, TypeScript, Tailwind CSS v4, Vite 8, oxlint, and automated tests covering algorithm optimality, maze reachability, dark-mode WCAG 2.2 AA contrast, and keyboard controls.'
           }
         ]
       }
