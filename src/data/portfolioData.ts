@@ -57,7 +57,7 @@ export const SKILLS: SkillItem[] = [
     name: 'TypeScript',
     categoryLabel: 'Language',
     group: 'languages',
-    context: 'End-to-end types across the AlgoVisualizer and Vault Ledger monorepos.',
+    context: 'End-to-end types across AlgoVision 2.0 and the Vault Ledger monorepo.',
     heatLevel: 5
   },
   {
@@ -115,7 +115,7 @@ export const SKILLS: SkillItem[] = [
     name: 'React (18 / 19)',
     categoryLabel: 'Frontend UI',
     group: 'frontend',
-    context: 'Interactive UIs for AlgoVisualizer and the Auto-Documenter web reader.',
+    context: 'Interactive UIs for AlgoVision 2.0 and the Auto-Documenter web reader.',
     heatLevel: 5
   },
   {
