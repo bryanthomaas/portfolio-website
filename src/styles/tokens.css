@@ -1,46 +1,47 @@
-:root,
-[data-theme="dark"] {
+:root {
   color-scheme: dark;
 
-  /* Rich Translucent Oxblood Atmosphere (Matches Localhost) */
-  --bg-base: #320307;
-  --bg-surface: rgba(50, 3, 7, 0.3);
-  --bg-surface-hover: rgba(84, 7, 12, 0.44);
-  --bg-surface-solid: #3a0408;
-  --bg-well: rgba(28, 1, 3, 0.48);
-  --bg-elevated: rgba(215, 26, 6, 0.28);
-  --bg-glass: rgba(50, 3, 7, 0.86);
+  /* True OLED Black Base */
+  --bg-base: #000000;
 
-  /* Foreground Structural Color (#D71A06) */
-  --fg-brand: #D71A06;
-  --fg-brand-subtle: rgba(215, 26, 6, 0.22);
+  /* Translucent Cards (~46% tint) + Deeper Interactive Wells (~68% tint) for Crisp Readability */
+  --bg-surface: rgba(3, 8, 6, 0.46);
+  --bg-surface-hover: rgba(5, 13, 9, 0.58);
+  --bg-surface-solid: rgba(4, 10, 8, 0.94);
+  --bg-well: rgba(2, 6, 4, 0.68);
+  --bg-elevated: rgba(255, 255, 255, 0.10);
+  --bg-glass: rgba(3, 8, 6, 0.84);
 
-  /* Accent & Attention (#CDF73D — Acid Chartreuse) */
-  --accent: #CDF73D;
-  --accent-hover: #d8fa64;
-  --accent-subtle: rgba(205, 247, 61, 0.18);
-  --accent-text: #250104;
+  /* Foreground Brand Structural Color */
+  --fg-brand: #FFFFFF;
+  --fg-brand-subtle: rgba(255, 255, 255, 0.18);
 
-  /* Three Text Roles */
-  --text-primary: #FFF5F2;
-  --text-secondary: #F7CEC6;
-  --text-muted: #FF6552;
-  --text-on-accent: #250104;
+  /* Accent & Attention: Warm Sunlit Amber */
+  --accent: #F59E0B;
+  --accent-hover: #FBBF24;
+  --accent-subtle: rgba(245, 158, 11, 0.18);
+  --accent-text: #1A1002;
 
-  /* Crisp Text Rendering */
-  --text-halo-strong: none;
-  --text-halo-body: none;
-  --text-halo-meta: none;
+  /* Pure White Typography for Maximum Contrast over Ultra-Clear Glass */
+  --text-primary: #FFFFFF;
+  --text-secondary: #FFFFFF;
+  --text-muted: #EEF2F6;
+  --text-on-accent: #1A1002;
 
-  /* Hairlines & Borders — Powered by #D71A06 Foreground & #CDF73D Focus */
-  --border-subtle: rgba(215, 26, 6, 0.5);
-  --border-strong: #CDF73D;
-  --border-focus: #CDF73D;
+  /* Single-Pass Crisp Drop Shadows for Legibility Without Blur Lag */
+  --text-halo-strong: 0 2px 4px rgba(0, 0, 0, 0.96);
+  --text-halo-body: 0 1px 2px rgba(0, 0, 0, 0.96);
+  --text-halo-meta: 0 1px 2px rgba(0, 0, 0, 0.96);
+
+  /* Delicate Crisp Glass Hairlines */
+  --border-subtle: rgba(255, 255, 255, 0.18);
+  --border-strong: #F59E0B;
+  --border-focus: #F59E0B;
 
   /* Depth */
-  --shadow-sm: 0 2px 6px rgba(12, 0, 1, 0.55);
-  --shadow-card: 0 4px 16px rgba(12, 0, 1, 0.5);
-  --shadow-hover: 0 8px 24px rgba(12, 0, 1, 0.7);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.75);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.8);
+  --shadow-hover: 0 8px 36px rgba(0, 0, 0, 0.9);
 
   /* Typography — Fraunces for Headings, Familjen Grotesk for Body */
   --font-display: 'Fraunces', Georgia, serif;
@@ -59,34 +60,4 @@
   --ease-default: cubic-bezier(0.22, 1, 0.36, 1);
   --duration-fast: 150ms;
   --duration-normal: 220ms;
-}
-
-[data-theme="light"] {
-  color-scheme: dark;
-
-  /* Deep Ink & Oxblood Variant */
-  --bg-base: #200104;
-  --bg-surface: rgba(42, 2, 5, 0.45);
-  --bg-surface-hover: rgba(65, 4, 9, 0.60);
-  --bg-surface-solid: #280105;
-  --bg-well: rgba(18, 1, 3, 0.65);
-  --bg-elevated: rgba(215, 26, 6, 0.24);
-  --bg-glass: rgba(35, 2, 5, 0.90);
-
-  --fg-brand: #D71A06;
-  --fg-brand-subtle: rgba(215, 26, 6, 0.20);
-
-  --accent: #CDF73D;
-  --accent-hover: #d8fa64;
-  --accent-subtle: rgba(205, 247, 61, 0.16);
-  --accent-text: #1a0103;
-
-  --text-primary: #FFF5F2;
-  --text-secondary: #F3C7BF;
-  --text-muted: #FF6552;
-  --text-on-accent: #1a0103;
-
-  --border-subtle: rgba(215, 26, 6, 0.45);
-  --border-strong: #CDF73D;
-  --border-focus: #CDF73D;
 }
