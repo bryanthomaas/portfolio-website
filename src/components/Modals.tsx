@@ -9,7 +9,6 @@ interface ModalsProps {
   isCmdOpen: boolean;
   onCloseCmd: () => void;
   onNavigate: (selector: string) => void;
-  onToggleTheme: () => void;
   onOpenResume: () => void;
   onCopyEmail: () => void;
   onCopyPhone: () => void;
@@ -18,7 +17,7 @@ interface ModalsProps {
 const CMD_ITEMS = [
   { group: 'Navigation', label: 'Overview & 3D A* Sandbox', shortcut: 'G H', scroll: '#hero' },
   { group: 'Navigation', label: `Featured Projects (${PROJECTS.length})`, shortcut: 'G P', scroll: '#projects' },
-  { group: 'Navigation', label: `Technical Stack (${SKILLS.length})`, shortcut: 'G S', scroll: '#skills' },
+  { group: 'Navigation', label: `Technical Stack (${SKILLS.length})`, shortcut: 'G S', scroll: '#stack' },
   { group: 'Navigation', label: 'Education Credentials', shortcut: 'G E', scroll: '#education' },
   { group: 'Navigation', label: 'Professional Experience', shortcut: 'G X', scroll: '#experience' },
   { group: 'Navigation', label: 'Contact & Direct Channels', shortcut: 'G C', scroll: '#contact' },
@@ -31,7 +30,7 @@ const CMD_ITEMS = [
   { group: 'Actions', label: 'Open LinkedIn (in/bryanthomas543)', shortcut: '↗', action: 'linkedin' }
 ];
 
-export const Modals: React.FC<ModalsProps> = ({
+export const Modals: React.FC<ModalsProps> = React.memo(({
   activeProjectId,
   onCloseProject,
   isResumeOpen,
@@ -39,7 +38,6 @@ export const Modals: React.FC<ModalsProps> = ({
   isCmdOpen,
   onCloseCmd,
   onNavigate,
-  onToggleTheme,
   onOpenResume,
   onCopyEmail,
   onCopyPhone
@@ -93,8 +91,6 @@ export const Modals: React.FC<ModalsProps> = ({
     onCloseCmd();
     if (item.scroll) {
       onNavigate(item.scroll);
-    } else if (item.action === 'theme') {
-      onToggleTheme();
     } else if (item.action === 'resume') {
       onOpenResume();
     } else if (item.action === 'download-pdf') {
@@ -379,4 +375,6 @@ export const Modals: React.FC<ModalsProps> = ({
       </dialog>
     </>
   );
-};
+});
+
+Modals.displayName = 'Modals';
