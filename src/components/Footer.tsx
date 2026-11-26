@@ -17,14 +17,11 @@ export const Footer: React.FC<FooterProps> = React.memo(({
     <footer className="site-footer">
       <div className="section-container footer-inner">
         <div className="footer-brand">
-          <BrandLogo size={28} idPrefix="footer-brand" />
+          <BrandLogo size={28} />
           <span>
             <strong>Bryan Thomas</strong> · Computer Engineer · Software Developer
           </span>
         </div>
-        <p className="footer-colophon">
-          Built with React 19, TypeScript, GSAP, and Lenis.
-        </p>
         <div className="footer-links">
           <a href="https://github.com/bryanthomaas" target="_blank" rel="noopener noreferrer">
             GitHub

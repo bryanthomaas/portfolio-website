@@ -1,10 +1,38 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 interface ContactSectionProps {
   onCopyEmail: () => void;
   onCopyPhone: () => void;
   onFormSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }
+
+interface InquiryOption {
+  value: string;
+  label: string;
+  badge: string;
+  description: string;
+}
+
+const INQUIRY_OPTIONS: InquiryOption[] = [
+  {
+    value: 'Full-Time Engineering Role',
+    label: 'Full-Time Opportunity',
+    badge: 'Careers',
+    description: 'SWE, Systems & Infrastructure Roles'
+  },
+  {
+    value: 'Project Collaboration',
+    label: 'Project Collaboration',
+    badge: 'Projects',
+    description: 'Open-source or technical projects'
+  },
+  {
+    value: 'General Technical Inquiry',
+    label: 'Technical Discussion',
+    badge: 'General',
+    description: 'Architecture, ideas & tech talk'
+  }
+];
 
 /**
  * Contact section featuring direct communication channels with one-click copy
@@ -15,6 +43,72 @@ export const ContactSection: React.FC<ContactSectionProps> = React.memo(({
   onCopyPhone,
   onFormSubmit
 }) => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedTopic, setSelectedTopic] = useState('Full-Time Engineering Role');
+  const [focusedIndex, setFocusedIndex] = useState(0);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!isDropdownOpen) return;
+
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+
+  // Handle keyboard navigation
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (!isDropdownOpen) {
+        setIsDropdownOpen(true);
+        setFocusedIndex(0);
+      } else {
+        setFocusedIndex((prev) => (prev + 1) % INQUIRY_OPTIONS.length);
+      }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (!isDropdownOpen) {
+        setIsDropdownOpen(true);
+        setFocusedIndex(INQUIRY_OPTIONS.length - 1);
+      } else {
+        setFocusedIndex((prev) => (prev - 1 + INQUIRY_OPTIONS.length) % INQUIRY_OPTIONS.length);
+      }
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      if (isDropdownOpen) {
+        e.preventDefault();
+        setSelectedTopic(INQUIRY_OPTIONS[focusedIndex].value);
+        setIsDropdownOpen(false);
+        triggerRef.current?.focus();
+      }
+    } else if (e.key === 'Escape') {
+      if (isDropdownOpen) {
+        e.preventDefault();
+        setIsDropdownOpen(false);
+        triggerRef.current?.focus();
+      }
+    }
+  };
+
+  const handleSelect = (value: string) => {
+    setSelectedTopic(value);
+    setIsDropdownOpen(false);
+    triggerRef.current?.focus();
+  };
+
+  const currentOption =
+    INQUIRY_OPTIONS.find((opt) => opt.value === selectedTopic) || INQUIRY_OPTIONS[0];
   return (
     <section className="section-container" id="contact">
       <div className="section-header">
@@ -155,12 +249,94 @@ export const ContactSection: React.FC<ContactSectionProps> = React.memo(({
               </div>
 
               <div className="form-group">
-                <label htmlFor="inquiryType">Inquiry Topic</label>
-                <select id="inquiryType" name="inquiryType">
-                  <option value="Full-Time Engineering Role">Full-Time Opportunity</option>
-                  <option value="Project Collaboration">Project Collaboration</option>
-                  <option value="General Technical Inquiry">Technical Discussion</option>
-                </select>
+                <label id="inquiryType-label" htmlFor="inquiryType-button">Inquiry Topic</label>
+                <div className="custom-select-wrapper" ref={dropdownRef}>
+                  <button
+                    ref={triggerRef}
+                    type="button"
+                    id="inquiryType-button"
+                    className={`custom-select-trigger ${isDropdownOpen ? 'open' : ''}`}
+                    onClick={() => setIsDropdownOpen((prev) => !prev)}
+                    onKeyDown={handleKeyDown}
+                    aria-haspopup="listbox"
+                    aria-expanded={isDropdownOpen}
+                    aria-labelledby="inquiryType-label"
+                  >
+                    <span className="custom-select-value">{currentOption.label}</span>
+                    <span className="custom-select-meta">
+                      <kbd>{currentOption.badge}</kbd>
+                      <svg
+                        className={`custom-select-chevron ${isDropdownOpen ? 'open' : ''}`}
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
+                    </span>
+                  </button>
+
+                  {isDropdownOpen && (
+                    <div
+                      className="custom-select-menu cmd-palette-box"
+                      role="listbox"
+                      aria-labelledby="inquiryType-label"
+                    >
+                      <div className="custom-select-header">Inquiry Options</div>
+                      <div className="custom-select-list">
+                        {INQUIRY_OPTIONS.map((opt, idx) => {
+                          const isSelected = opt.value === selectedTopic;
+                          const isFocused = idx === focusedIndex;
+                          return (
+                            <button
+                              key={opt.value}
+                              type="button"
+                              role="option"
+                              aria-selected={isSelected}
+                              className={`custom-select-item cmd-item ${isSelected ? 'selected' : ''} ${
+                                isFocused ? 'focused' : ''
+                              }`}
+                              onClick={() => handleSelect(opt.value)}
+                              onMouseEnter={() => setFocusedIndex(idx)}
+                            >
+                              <div className="custom-select-item-content">
+                                <span className="custom-select-item-label">{opt.label}</span>
+                                <span className="custom-select-item-desc">{opt.description}</span>
+                              </div>
+                              <div className="custom-select-item-aside">
+                                <kbd>{opt.badge}</kbd>
+                                {isSelected && (
+                                  <svg
+                                    className="custom-select-check"
+                                    width="14"
+                                    height="14"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    aria-hidden="true"
+                                  >
+                                    <polyline points="20 6 9 17 4 12" />
+                                  </svg>
+                                )}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  <input type="hidden" id="inquiryType" name="inquiryType" value={selectedTopic} />
+                </div>
               </div>
             </div>
 
